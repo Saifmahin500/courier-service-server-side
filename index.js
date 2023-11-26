@@ -1,5 +1,6 @@
+require("dotenv").config();
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require("cors");
 const app = express();
 
@@ -26,9 +27,51 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
+    const userCollection = client.db("DeliveryUser").collection("users")
+    const DeliveryManCollection = client.db("DeliveryUser").collection("DeliveryMan")
+    const BookParcelCollection = client.db("DeliveryUser").collection("Booking")
+
+    // user related
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      //   console.log(user);
+      const result = await userCollection.insertOne(user);
+      console.log(result);
+      res.send(result);
+    });
+
+    // Delivery Man Related
+
+    app.get("/TopDeliveryMan", async (req, res) => {
+      const cursor = DeliveryManCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+    // booking parcel related
+    app.post("/BookingParcel", async (req, res) => {
+      const booking = req.body;
+      const result = await BookParcelCollection.insertOne(booking);
+      console.log(result);
+      res.send(result);
+    })
+
+    app.get("/BookingParcel", async (req, res) => {
+      const cursor = BookParcelCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
+    app.delete("/BookingParcel/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await BookParcelCollection.deleteOne(query);
+      res.send(result)
+    })
+
+
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
