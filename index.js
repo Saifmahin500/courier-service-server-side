@@ -32,6 +32,11 @@ async function run() {
     const BookParcelCollection = client.db("DeliveryUser").collection("Booking")
 
     // user related
+    app.get("/users", async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result)
+    })
     app.post("/users", async (req, res) => {
       const user = req.body;
       //   console.log(user);
@@ -39,6 +44,24 @@ async function run() {
       console.log(result);
       res.send(result);
     });
+    app.delete("/users/:id", async(req,res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await userCollection.deleteOne(query);
+      res.send(result)
+    })
+    app.patch("/users/admin/:id", async(req,res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const updatedDoc = {
+        $set: {
+          role : "admin"
+        }
+      }
+      const result = await userCollection.updateOne(filter,updatedDoc);
+      res.send(result)
+    })
+
 
     // Delivery Man Related
 
@@ -48,6 +71,13 @@ async function run() {
       res.send(result)
     })
     // booking parcel related
+    app.get("/BookingParcel", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email}
+      const result = await BookParcelCollection.find(query).toArray();
+      res.send(result)
+    })
+    
     app.post("/BookingParcel", async (req, res) => {
       const booking = req.body;
       const result = await BookParcelCollection.insertOne(booking);
@@ -55,11 +85,7 @@ async function run() {
       res.send(result);
     })
 
-    app.get("/BookingParcel", async (req, res) => {
-      const cursor = BookParcelCollection.find();
-      const result = await cursor.toArray();
-      res.send(result)
-    })
+    
     app.delete("/BookingParcel/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
