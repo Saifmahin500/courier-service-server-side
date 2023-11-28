@@ -84,7 +84,7 @@ async function run() {
       const user = await userCollection.findOne(query);
       let admin = false;
       if (user) {
-        admin = user?.role === 'admin';
+        admin = user?.role === "admin";
       }
       res.send({ admin });
     })
@@ -123,6 +123,7 @@ async function run() {
       res.send(result)
     })
     // booking parcel related
+   
     app.get("/BookingParcel", async (req, res) => {
       const email = req.query.email;
       const query = { email: email}
@@ -144,6 +145,11 @@ async function run() {
       const result = await BookParcelCollection.deleteOne(query);
       res.send(result)
     })
+
+    app.get("/AllParcel", async(req,res) => {
+      const result = await BookParcelCollection.find().toArray();
+      res.send(result);
+  })
 
 
     // Send a ping to confirm a successful connection
