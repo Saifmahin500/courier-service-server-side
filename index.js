@@ -130,11 +130,42 @@ async function run() {
       const result = await BookParcelCollection.find(query).toArray();
       res.send(result)
     })
+    app.get('/BookingParcel/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await BookParcelCollection.findOne(query);
+      res.send(result);
+    })
     
     app.post("/BookingParcel", async (req, res) => {
       const booking = req.body;
       const result = await BookParcelCollection.insertOne(booking);
       console.log(result);
+      res.send(result);
+    })
+    app.patch('/BookingParcel/:id', async (req, res) => {
+      const item = req.body;
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) }
+      const updatedItems = {
+        $set: {
+          Name: item.Name,
+          email: item.email,
+          Price: item.Price,
+          ParcelType: item.ParcelType,
+          ParcelWeight: item.ParcelWeight,
+          ReceiverName: item.ReceiverName,
+          ReceiverPhoneNumber: item.ReceiverPhoneNumber,
+          ParcelDeliveryAddress: item.ParcelDeliveryAddress,
+          RequestedDeliveryDate: item.RequestedDeliveryDate,
+          longitude: item.longitude,
+          Latitude: item.Latitude,
+          PhoneNumber: item.PhoneNumber
+          
+        }
+      }
+
+      const result = await BookParcelCollection.updateOne(filter, updatedItems)
       res.send(result);
     })
 
