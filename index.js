@@ -177,9 +177,34 @@ async function run() {
       res.send(result)
     })
 
+    // admin
+
     app.get("/AllParcel", async(req,res) => {
       const result = await BookParcelCollection.find().toArray();
       res.send(result);
+  })
+  app.patch("/AllParcel/admin/:id", verifyToken, verifyAdmin, async(req,res) => {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) }
+    const updatedDoc = {
+      $set: {
+        role : "On the Way"
+      }
+    }
+    const result = await BookParcelCollection.updateOne(filter,updatedDoc);
+    res.send(result)
+  })
+
+  app.get('/admin-stats', verifyToken, verifyAdmin,  async (req, res) => {
+    const users = await userCollection.estimatedDocumentCount();
+    const Booking = await BookParcelCollection.estimatedDocumentCount();
+    const deliveryMan = await DeliveryManCollection.estimatedDocumentCount();
+
+    res.send({
+      users,
+      Booking,
+      deliveryMan
+    })
   })
 
 
